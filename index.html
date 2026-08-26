@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Sekolah Saya - แบบทดสอบปรนัย</title>
+<style>
+  :root{
+    --pink:#ff6fa5;
+    --purple:#7b5cff;
+    --blue:#4da3ff;
+    --green:#2ecc71;
+    --red:#ff5c5c;
+    --yellow:#f5c518;
+    --bg:#f7f5ff;
+    --card:#ffffff;
+    --ink:#2d2a4a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', 'Sarabun', 'Prompt', sans-serif;
+    background:
+      radial-gradient(circle at 10% 10%, #ffe3f0 0%, transparent 40%),
+      radial-gradient(circle at 90% 20%, #e0eaff 0%, transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    padding:24px 12px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .hero{
+    background:linear-gradient(120deg, var(--purple), var(--pink));
+    color:white;
+    border-radius:24px;
+    padding:28px 24px;
+    text-align:center;
+    box-shadow:0 12px 30px rgba(123,92,255,0.35);
+    margin-bottom:22px;
+  }
+  .hero h1{margin:0 0 6px;font-size:1.5rem;}
+  .hero p{margin:0;opacity:0.95;font-size:0.95rem;}
+  .hero .sub{font-size:1.05rem;font-weight:600;margin-top:4px;}
+
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:20px 20px 16px;
+    margin-bottom:16px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    border:2px solid transparent;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  .card.correct{border-color:var(--green); box-shadow:0 6px 18px rgba(46,204,113,0.25);}
+  .card.incorrect{border-color:var(--red); box-shadow:0 6px 18px rgba(255,92,92,0.25);}
+
+  .qnum{
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    width:28px;height:28px;
+    background:var(--blue);
+    color:white;
+    border-radius:50%;
+    font-weight:700;
+    font-size:0.85rem;
+    margin-right:8px;
+  }
+  .qtext{font-size:1.1rem;font-weight:700;margin:6px 0 14px;}
+  .qtext .kw{color:var(--purple);}
+
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#f8f6ff;
+    border:2px solid #e6e0ff;
+    border-radius:14px;
+    padding:12px 14px;
+    cursor:pointer;
+    font-size:1rem;
+    font-weight:600;
+    text-align:left;
+    transition:all .15s;
+  }
+  .opt:hover{background:#efe9ff;}
+  .opt.selected{
+    background:linear-gradient(120deg, var(--purple), var(--blue));
+    color:white;
+    border-color:transparent;
+    transform:scale(1.02);
+  }
+  .opt .letter{
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    width:26px;height:26px;
+    border-radius:50%;
+    background:white;
+    color:var(--purple);
+    font-weight:800;
+    font-size:0.85rem;
+    flex-shrink:0;
+  }
+  .opt.selected .letter{background:rgba(255,255,255,0.25);color:white;}
+
+  .hintbtn{
+    background:none;
+    border:1.5px dashed var(--yellow);
+    color:#a6820a;
+    padding:7px 12px;
+    border-radius:10px;
+    font-size:0.85rem;
+    cursor:pointer;
+    font-weight:600;
+    margin-top:12px;
+  }
+  .hintbtn:hover{background:#fff8e0;}
+
+  .hint-box{
+    margin-top:10px;
+    background:#fff8e0;
+    border-left:4px solid var(--yellow);
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:0.88rem;
+    display:none;
+  }
+  .hint-box.show{display:block;}
+
+  .feedback{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:0.92rem;
+    line-height:1.5;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.green{background:#e8fbef;color:#1e8449;border:1.5px solid #b6f0cd;}
+  .feedback.red{background:#ffefef;color:#c0392b;border:1.5px solid #ffcccc;}
+
+  .controls{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin:24px 0 12px;
+    flex-wrap:wrap;
+  }
+  button.main{
+    background:linear-gradient(120deg, var(--purple), var(--blue));
+    color:white;
+    border:none;
+    padding:14px 28px;
+    border-radius:14px;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 8px 18px rgba(77,163,255,0.35);
+  }
+  button.main:hover{filter:brightness(1.06);}
+  button.reset{
+    background:white;
+    color:var(--purple);
+    border:2px solid var(--purple);
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .result{
+    display:none;
+    text-align:center;
+    border-radius:20px;
+    padding:24px;
+    margin-top:10px;
+    font-size:1.1rem;
+    font-weight:700;
+  }
+  .result.show{display:block;}
+  .result.win{
+    background:linear-gradient(120deg,#ffe28a,#ff9ecf);
+    color:#5a2a75;
+    box-shadow:0 10px 26px rgba(255,158,207,0.4);
+  }
+  .result.tryagain{
+    background:#eef1ff;
+    color:var(--purple);
+    border:2px dashed var(--purple);
+  }
+  .score-bar{
+    height:10px;
+    background:#eee;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:16px;
+  }
+  .score-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--green),var(--blue));
+    width:0%;
+    transition:width .6s ease;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>📚 Sekolah Saya</h1>
+    <p>แบบทดสอบปรนัย - เลือกคำตอบที่ถูกต้องที่สุดเพียง 1 ข้อ</p>
+    <div class="sub">แตะตัวเลือก ก / ข / ค ที่คิดว่าถูกต้อง!</div>
+  </div>
+
+  <div id="questions"></div>
+
+  <div class="controls">
+    <button class="main" onclick="checkAll()">✅ ตรวจคำตอบ</button>
+    <button class="reset" onclick="resetAll()">🔄 เริ่มใหม่</button>
+  </div>
+
+  <div class="result" id="resultBox"></div>
+  <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q:'คำว่า "โรงเรียน" ภาษามลายูคืออะไร?',
+    options:["sekolah","kantin","tandas"],
+    answer:0,
+    meaning:'“sekolah” แปลว่า โรงเรียน ถูกต้อง! ส่วน kantin คือโรงอาหาร และ tandas คือห้องน้ำ',
+    hint:"คำนี้เจอในชื่อของใบงานเลย (Sekolah Saya) 🏫"
+  },
+  {
+    q:'"guru" หมายถึงอะไร?',
+    options:["นักเรียน","ครู","เพื่อน"],
+    answer:1,
+    meaning:'“guru” แปลว่า ครู คือผู้ที่สอนหนังสือให้เรา',
+    hint:"บุคคลที่ยืนหน้าห้องเรียนแล้วสอนนักเรียน 👩‍🏫"
+  },
+  {
+    q:'"murid" หมายถึงอะไร?',
+    options:["นักเรียน","ครู","ผู้อำนวยการ"],
+    answer:0,
+    meaning:'“murid” แปลว่า นักเรียน ผู้ที่มาเรียนที่โรงเรียน',
+    hint:"คำนี้คือตัวเราเองเวลาอยู่ในโรงเรียน 🎒"
+  },
+  {
+    q:'คำว่า "ห้องเรียน" ภาษามลายูคืออะไร?',
+    options:["kelas","kantin","perpustakaan"],
+    answer:0,
+    meaning:'“kelas” แปลว่า ห้องเรียน ส่วน kantin คือโรงอาหาร และ perpustakaan คือห้องสมุด',
+    hint:"ห้องที่มีโต๊ะ เก้าอี้ กระดาน และครูสอนอยู่ทุกวัน 🧑‍🏫"
+  },
+  {
+    q:'"buku" หมายถึงอะไร?',
+    options:["ดินสอ","หนังสือ","โต๊ะ"],
+    answer:1,
+    meaning:'“buku” แปลว่า หนังสือ สิ่งที่เราอ่านเพื่อหาความรู้',
+    hint:"สิ่งนี้มีหน้ากระดาษให้เปิดอ่าน 📖"
+  },
+  {
+    q:'"pensel" หมายถึงอะไร?',
+    options:["ปากกา","สมุด","ดินสอ"],
+    answer:2,
+    meaning:'“pensel” แปลว่า ดินสอ อุปกรณ์ที่ใช้เขียน (ไม่ใช่ปากกา!)',
+    hint:"อุปกรณ์แท่งเล็ก ๆ ที่มักมียางลบอยู่ปลายด้าม ✏️"
+  },
+  {
+    q:'เราใช้ "kerusi" เพื่อทำอะไร?',
+    options:["นั่ง","เขียน","อ่าน"],
+    answer:0,
+    meaning:'“kerusi” แปลว่า เก้าอี้ ใช้สำหรับนั่ง',
+    hint:"สิ่งนี้มีขา 4 ขา และเรานั่งทับมันทุกวัน 🪑"
+  },
+  {
+    q:'"meja" หมายถึงอะไร?',
+    options:["เก้าอี้","โต๊ะ","กระดาน"],
+    answer:1,
+    meaning:'“meja” แปลว่า โต๊ะ สิ่งที่เราวางหนังสือหรือปากกาไว้ด้านบน',
+    hint:"แผ่นเรียบมีขารองรับ ใช้วางของ 🪵"
+  },
+  {
+    q:'เราไปรับประทานอาหารที่ไหน?',
+    options:["tandas","kelas","kantin"],
+    answer:2,
+    meaning:'เราไปกินข้าวที่ “kantin” (โรงอาหาร) ส่วน tandas คือห้องน้ำ และ kelas คือห้องเรียน',
+    hint:"สถานที่นี้มีกลิ่นอาหารหอม ๆ ตอนพักเที่ยง 🍽️"
+  },
+  {
+    q:'"tandas" หมายถึงอะไร?',
+    options:["ห้องน้ำ","ห้องเรียน","โรงอาหาร"],
+    answer:0,
+    meaning:'“tandas” แปลว่า ห้องน้ำ',
+    hint:"สถานที่นี้ใช้ล้างมือและทำธุระส่วนตัว 🚻"
+  }
+];
+
+const letters = ["ก","ข","ค"];
+const selected = new Array(questions.length).fill(null);
+
+const qDiv = document.getElementById('questions');
+
+questions.forEach((item,i)=>{
+  const card = document.createElement('div');
+  card.className='card';
+  card.id='card'+i;
+
+  const optsHtml = item.options.map((opt,j)=>`
+    <div class="opt" id="opt${i}_${j}" onclick="selectOpt(${i}, ${j})">
+      <span class="letter">${letters[j]}</span>
+      <span>${opt}</span>
+    </div>
+  `).join('');
+
+  card.innerHTML = `
+    <div><span class="qnum">${i+1}</span></div>
+    <div class="qtext">${item.q}</div>
+    <div class="options">${optsHtml}</div>
+    <button class="hintbtn" onclick="toggleHint(${i})">💡 คำใบ้</button>
+    <div class="hint-box" id="hint${i}">💡 <b>เคล็ดลับ:</b> ${item.hint}</div>
+    <div class="feedback" id="fb${i}"></div>
+  `;
+  qDiv.appendChild(card);
+});
+
+function selectOpt(i, j){
+  selected[i] = j;
+  questions[i].options.forEach((_,k)=>{
+    document.getElementById(`opt${i}_${k}`).classList.remove('selected');
+  });
+  document.getElementById(`opt${i}_${j}`).classList.add('selected');
+
+  const card = document.getElementById('card'+i);
+  card.classList.remove('correct','incorrect');
+  document.getElementById('fb'+i).classList.remove('show');
+}
+
+function toggleHint(i){
+  document.getElementById('hint'+i).classList.toggle('show');
+}
+
+function checkAll(){
+  let correctCount = 0;
+  questions.forEach((item,i)=>{
+    const val = selected[i];
+    const card = document.getElementById('card'+i);
+    const fb = document.getElementById('fb'+i);
+    fb.classList.add('show');
+    card.classList.remove('correct','incorrect');
+
+    if(val === null){
+      fb.className='feedback show red';
+      fb.innerHTML = `🟡 <b>Cuba lagi!</b> ยังไม่ได้เลือกคำตอบเลยนะ ลองแตะตัวเลือก หรือดูคำใบ้ 💡`;
+      card.classList.add('incorrect');
+      return;
+    }
+
+    if(val === item.answer){
+      correctCount++;
+      card.classList.add('correct');
+      fb.className='feedback show green';
+      fb.innerHTML = `🟢 <b>Betul!</b> ${item.meaning}`;
+    } else {
+      card.classList.add('incorrect');
+      fb.className='feedback show red';
+      fb.innerHTML = `🔴 <b>Belum tepat.</b> “${item.options[val]}” ไม่ใช่คำตอบที่ถูกต้อง
+      <br>👉 เฉลย: <b>${letters[item.answer]}. ${item.options[item.answer]}</b> — ${item.meaning}`;
+    }
+  });
+
+  showResult(correctCount);
+}
+
+function showResult(correctCount){
+  const box = document.getElementById('resultBox');
+  const fill = document.getElementById('scoreFill');
+  const pct = Math.round((correctCount/questions.length)*100);
+  fill.style.width = pct+'%';
+
+  box.classList.add('show');
+  if(correctCount === questions.length){
+    box.className='result show win';
+    box.innerHTML = `🎉 <b>Tahniah! Semua jawapan betul!</b><br>คุณทำถูกครบทั้ง 10 ข้อ! คุณจำคำศัพท์ภาษามลายูได้แม่นมากเลย 🌟<br><span style="font-weight:500;font-size:0.95rem;">คะแนน: ${correctCount}/${questions.length}</span>`;
+  } else {
+    box.className='result show tryagain';
+    box.innerHTML = `📊 คะแนนของคุณ: <b>${correctCount}/${questions.length}</b><br>ลองอ่าน Feedback สีแดงแล้วแตะตัวเลือกใหม่ จากนั้นกด "ตรวจคำตอบ" อีกครั้งได้เลย! 💪`;
+  }
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function resetAll(){
+  questions.forEach((item,i)=>{
+    selected[i] = null;
+    item.options.forEach((_,j)=>{
+      document.getElementById(`opt${i}_${j}`).classList.remove('selected');
+    });
+    const fb = document.getElementById('fb'+i);
+    fb.classList.remove('show');
+    document.getElementById('hint'+i).classList.remove('show');
+    document.getElementById('card'+i).classList.remove('correct','incorrect');
+  });
+  const box = document.getElementById('resultBox');
+  box.classList.remove('show');
+  document.getElementById('scoreFill').style.width='0%';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
